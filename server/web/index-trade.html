@@ -1,0 +1,1686 @@
+<html>
+
+<head>
+<title>Nu Test Page</title>
+
+<!-- CSS -->
+
+<!-- view CSS gets inserted above -->
+
+
+<!-- JAVASCRIPT -->
+
+<script type="text/javascript" src="js/jquery.js"></script>
+
+<!-- Nu -->
+
+<!-- IMMEDIATE -->
+
+<script language="javascript" type="text/javascript">
+
+function
+createTrade (ioWorld)
+{
+	var	trade = new Object ();
+	
+	trade.agricultural = ioWorld.atmosphere >= 4 && ioWorld.atmosphere <= 9 &&
+		ioWorld.hydro >= 4 && ioWorld.hydro <= 8 &&
+		ioWorld.population >= 5 && ioWorld.population <= 7;
+
+	trade.asteroid = ioWorld.size == 0 && ioWorld.atmosphere == 0 && ioWorld.hydro == 0;
+	
+	trade.barren = ioWorld.population == 0 && ioWorld.government == 0 && ioWorld.law == 0;
+	
+	trade.desert = ioWorld.atmosphere >= 2 && ioWorld.hydro == 0;
+	
+	trade.fluid = ioWorld.atmosphere >= 10 && ioWorld.hydro >= 1;
+	
+	trade.garden = ioWorld.size >= 5 &&
+		ioWorld.atmosphere >= 4 && ioWorld.atmosphere <= 9 &&
+		ioWorld.hydro >= 4 && ioWorld.hydro <= 8;
+	
+	trade.hipop = ioWorld.population >= 9;
+	
+	trade.hitech = ioWorld.tech >= 12;
+	
+	trade.icecap = ioWorld.atmosphere < 2 && ioWorld.hydro >= 1;
+	
+	trade.industrial = (ioWorld.atmosphere <= 1 ||
+		ioWorld.atmosphere == 4 || ioWorld.atmosphere == 7 || ioWorld.atmosphere == 9) &&
+		ioWorld.population >= 9;
+		
+	trade.lowpop = ioWorld.population >= 1 && ioWorld.population <= 3;
+	
+	trade.lowtech = ioWorld.tech <= 5;
+	
+	trade.nonagricultural = ioWorld.atmosphere <= 4 && ioWorld.hydro <= 4 && ioWorld.population >= 6;
+	
+	trade.nonindustrial = ioWorld.population >= 4 && ioWorld.population <= 6;
+	
+	trade.poor = ioWorld.atmosphere >= 2 && ioWorld.atmosphere <= 5 && ioWorld.hydro <= 3;
+	
+	trade.rich = (ioWorld.atmosphere == 6 || ioWorld.atmosphere == 8) &&
+		ioWorld.population >= 6 && ioWorld.population <= 8;
+		
+	trade.waterworld = ioWorld.hydro == 10;
+	
+	trade.vacuum = ioWorld.atmosphere == 0;
+	
+	return trade;
+}
+
+function
+createWorld (inUPP)
+{
+	var	world = new Object ();
+	
+	world.starport = "XEDCBA".indexOf (inUPP [0]);
+	
+	world.size = parseInt (inUPP [1], 16);
+	world.atmosphere = parseInt (inUPP [2], 16);
+	world.hydro = parseInt (inUPP [3], 16);
+	world.population = parseInt (inUPP [4], 16);
+	world.government = parseInt (inUPP [5], 16);
+	world.law = parseInt (inUPP [6], 16);
+
+	if (inUPP [7] >= '0' && inUPP [7] <= '9')
+	{
+		console.log ("calling parseInt()");
+		
+		world.tech = parseInt (inUPP [7]);
+	}
+	else
+	{
+		world.tech = 10 + (inUPP.charCodeAt (7) - "A".charCodeAt (0));
+	}
+	
+	return world;
+}
+
+function
+generateWorlds ()
+{
+	console.log ("generateWorlds() called");
+	
+	var	worlds = new Array ();
+	
+	// REGINA
+	
+	worlds [0] = new Object ();
+	worlds [0].name = "Regina";
+	worlds [0].location = "0310";
+	worlds [0].subsector = "Regina";
+	worlds [0].sector = "Spinward Marches";
+	worlds [0].uwp = "A788899C";
+	worlds [0].gasgiant = true;
+	worlds [0].naval = true;
+	worlds [0].scout = true;
+	
+	worlds [1] = new Object ();
+	worlds [1].name = "Yori";
+	worlds [0].location = "0510";
+	worlds [1].subsector = "Regina";
+	worlds [1].sector = "Spinward Marches";
+	worlds [1].uwp = "C360767A";
+	worlds [1].gasgiant = true;
+
+	// LANTH
+	
+	worlds [2] = new Object ();
+	worlds [2].name = "Treece";
+	worlds [2].location = "0701";
+	worlds [2].subsector = "Lanth";
+	worlds [2].sector = "Spinward Marches";
+	worlds [2].uwp = "D2328668";
+	
+	for (var i = 0; i < worlds.length; i++)
+	{
+		var	world = worlds [i];
+		
+		var	spec = createWorld (world.uwp);
+		
+		for (var key in spec)
+		{
+			world [key] = spec [key];
+		}
+		
+		world.trade = createTrade (world.spec);
+	}
+
+	console.log (JSON.stringify (worlds));	
+}
+
+function
+findPurchaseDM (inGoods, inWorld)
+{
+	var	maxDM = 0;
+	
+	for (var i = 0; i < inGoods.purchaseDMs.length; i++)
+	{
+		var	purchaseDM = inGoods.purchaseDMs [i];
+		
+		if (inWorld.trade [purchaseDM.tradeClass])
+		{
+			if (purchaseDM.mod > maxDM)
+			{
+				// console.log ("noting purchase mod from " + purchaseDM.tradeClass + " of " + purchaseDM.mod);
+				
+				maxDM = purchaseDM.mod;
+			}
+		}
+	}
+	
+	return maxDM;
+}
+
+function
+findSaleDM (inGoods, inWorld)
+{
+	var	maxDM = 0;
+	
+	for (var i = 0; i < inGoods.saleDMs.length; i++)
+	{
+		var	saleDM = inGoods.saleDMs [i];
+		
+		if (inWorld.trade [saleDM.tradeClass])
+		{
+			if (saleDM.mod > maxDM)
+			{
+				// console.log ("noting sale mod from " + saleDM.tradeClass + " of " + saleDM.mod);
+				
+				maxDM = saleDM.mod;
+			}
+		}
+	}
+	
+	return maxDM;
+}
+
+function
+getPurchasePrice (inPriceIndex, inGoods)
+{
+	if (inPriceIndex > 21)
+	{
+		inPriceIndex = 21;
+	}
+	else
+	if (inPriceIndex < -1)
+	{
+		inPriceIndex = -1;
+	}
+
+	var	percent = gModifiedPriceTable [inPriceIndex].purchasePrice;
+	percent /= 100;
+	
+	return inGoods.price * percent;
+}
+
+function
+getSalePrice (inPriceIndex, inGoods)
+{
+	if (inPriceIndex > 21)
+	{
+		inPriceIndex = 21;
+	}
+	else
+	if (inPriceIndex < -1)
+	{
+		inPriceIndex = -1;
+	}
+
+	var	percent = gModifiedPriceTable [inPriceIndex].salePrice;
+	percent /= 100;
+	
+	return inGoods.price * percent;
+}
+
+function
+getModifier (inWorld, inModTable)
+{
+console.log ("getModifier() for " + inWorld.name);
+
+	var	totalMod = 0;
+	
+	for (var key in inWorld.trade)
+	{
+		var	value = inWorld.trade [key];
+		
+		if (typeof value == "boolean")
+		{
+			if (value)
+			{
+				var	mod = inModTable [key];
+				
+				if (typeof (mod) != "undefined")
+				{
+					// console.log ("adding modifier for " + key + ": " + mod);
+					
+					totalMod += mod;
+				}
+			}
+		}
+	}
+	
+	return totalMod;
+}
+
+function
+setupFreightTables ()
+{
+	gFreightTrafficCurrent = new Object ();
+	gFreightTrafficCurrent.agricultural = 2;
+	gFreightTrafficCurrent.asteroid = -3;
+	gFreightTrafficCurrent.barren = 0;
+	gFreightTrafficCurrent.desert = -3;
+	gFreightTrafficCurrent.fluid = -3;
+	gFreightTrafficCurrent.garden = 2;
+	gFreightTrafficCurrent.hipop = 2;
+	gFreightTrafficCurrent.icecap = -3;
+	gFreightTrafficCurrent.industrial = 3;
+	gFreightTrafficCurrent.lowpop = -5;
+	gFreightTrafficCurrent.nonagricultural = 3;
+	gFreightTrafficCurrent.nonindustrial = -3;
+	gFreightTrafficCurrent.poor = -3;
+	gFreightTrafficCurrent.rich = 2;
+	gFreightTrafficCurrent.waterworld = -3;
+
+	gFreightTrafficDestination = new Object ();
+	gFreightTrafficDestination.agricultural = 1;
+	gFreightTrafficDestination.asteroid = 1;
+	gFreightTrafficDestination.barren = -5;
+	gFreightTrafficDestination.desert = 0;
+	gFreightTrafficDestination.fluid = 0;
+	gFreightTrafficDestination.garden = 1;
+	gFreightTrafficDestination.hipop = 0;
+	gFreightTrafficDestination.icecap = 0;
+	gFreightTrafficDestination.industrial = 2;
+	gFreightTrafficDestination.lowpop = 0;
+	gFreightTrafficDestination.nonagricultural = 1;
+	gFreightTrafficDestination.nonindustrial = 1;
+	gFreightTrafficDestination.poor = -3;
+	gFreightTrafficDestination.rich = 2;
+	gFreightTrafficDestination.waterworld = 0;
+	
+	gFreightAvailable = new Array ();
+	
+	for (var i = 0; i < 17; i++)
+	{
+		gFreightAvailable [i] = new Object ();
+	}
+	
+	gFreightAvailable [0].incidental = "0";
+	gFreightAvailable [0].minor = "0"
+	gFreightAvailable [0].major = "0";
+
+	gFreightAvailable [1].incidental = "0";
+	gFreightAvailable [1].minor = "1D6-4"
+	gFreightAvailable [1].major = "1D6-4";
+
+	gFreightAvailable [2].incidental = "0";
+	gFreightAvailable [2].minor = "1D6-1"
+	gFreightAvailable [2].major = "1D6-2";
+
+	gFreightAvailable [3].incidental = "0";
+	gFreightAvailable [3].minor = "1D6"
+	gFreightAvailable [3].major = "1D6-1";
+	
+	gFreightAvailable [4].incidental = "0";
+	gFreightAvailable [4].minor = "1D6+1"
+	gFreightAvailable [4].major = "1D6";
+	
+	gFreightAvailable [5].incidental = "0";
+	gFreightAvailable [5].minor = "1D6+2"
+	gFreightAvailable [5].major = "1D6+1";
+	
+	gFreightAvailable [6].incidental = "0";
+	gFreightAvailable [6].minor = "1D6+3"
+	gFreightAvailable [6].major = "1D6+2";
+	
+	gFreightAvailable [7].incidental = "3D6";
+	gFreightAvailable [7].minor = "1D6+4"
+	gFreightAvailable [7].major = "1D6+3";
+	
+	gFreightAvailable [8].incidental = "0";
+	gFreightAvailable [8].minor = "1D6+5"
+	gFreightAvailable [8].major = "1D6+4";
+	
+	gFreightAvailable [9].incidental = "1D6-2";
+	gFreightAvailable [9].minor = "1D6+6"
+	gFreightAvailable [9].major = "1D6+5";
+	
+	gFreightAvailable [10].incidental = "1D6";
+	gFreightAvailable [10].minor = "1D6+7"
+	gFreightAvailable [10].major = "1D6+6";
+	
+	gFreightAvailable [11].incidental = "1D6+1";
+	gFreightAvailable [11].minor = "1D6+8"
+	gFreightAvailable [11].major = "1D6+7";
+	
+	gFreightAvailable [12].incidental = "1D6+2";
+	gFreightAvailable [12].minor = "1D6+9"
+	gFreightAvailable [12].major = "1D6+8";
+	
+	gFreightAvailable [13].incidental = "1D6+3";
+	gFreightAvailable [13].minor = "1D6+10"
+	gFreightAvailable [13].major = "1D6+9";
+	
+	gFreightAvailable [14].incidental = "1D6+4";
+	gFreightAvailable [14].minor = "1D6+12"
+	gFreightAvailable [14].major = "1D6+10";
+	
+	gFreightAvailable [15].incidental = "1D6+5";
+	gFreightAvailable [15].minor = "1D6+14"
+	gFreightAvailable [15].major = "1D6+11";
+	
+	gFreightAvailable [16].incidental = "1D6+6";
+	gFreightAvailable [16].minor = "1D6+16"
+	gFreightAvailable [16].major = "1D6+12";
+	
+}
+function
+setupPassengerTables ()
+{
+	gPassengerTrafficCurrent = new Object ();
+	gPassengerTrafficCurrent.agricultural = 0;
+	gPassengerTrafficCurrent.asteroid = 1;
+	gPassengerTrafficCurrent.barren = -5;
+	gPassengerTrafficCurrent.desert = -1;
+	gPassengerTrafficCurrent.fluid = 0;
+	gPassengerTrafficCurrent.garden = 2;
+	gPassengerTrafficCurrent.hipop = 0;
+	gPassengerTrafficCurrent.icecap = 1;
+	gPassengerTrafficCurrent.industrial = 2;
+	gPassengerTrafficCurrent.lowpop = 0;
+	gPassengerTrafficCurrent.nonagricultural = 0;
+	gPassengerTrafficCurrent.nonindustrial = 1;
+	gPassengerTrafficCurrent.poor = -2;
+	gPassengerTrafficCurrent.rich = -1;
+	gPassengerTrafficCurrent.waterworld = 0;
+
+	gPassengerTrafficDestination = new Object ();
+	gPassengerTrafficDestination.agricultural = 0;
+	gPassengerTrafficDestination.asteroid = -1;
+	gPassengerTrafficDestination.barren = -5;
+	gPassengerTrafficDestination.desert = -1;
+	gPassengerTrafficDestination.fluid = 0;
+	gPassengerTrafficDestination.garden = 2;
+	gPassengerTrafficDestination.hipop = 4;
+	gPassengerTrafficDestination.icecap = -1;
+	gPassengerTrafficDestination.industrial = 1;
+	gPassengerTrafficDestination.lowpop = -4;
+	gPassengerTrafficDestination.nonagricultural = 0;
+	gPassengerTrafficDestination.nonindustrial = -1;
+	gPassengerTrafficDestination.poor = -1;
+	gPassengerTrafficDestination.rich = 2;
+	gPassengerTrafficDestination.waterworld = 0;
+	
+	gPassengersAvailable = new Array ();
+	
+	for (var i = 0; i < 17; i++)
+	{
+		gPassengersAvailable [i] = new Object ();
+	}
+	
+	gPassengersAvailable [0].low = "0";
+	gPassengersAvailable [0].middle = "0"
+	gPassengersAvailable [0].high = "0";
+
+	gPassengersAvailable [1].low = "2D6-6";
+	gPassengersAvailable [1].middle = "1D6-2"
+	gPassengersAvailable [1].high = "0";
+
+	gPassengersAvailable [2].low = "2D6";
+	gPassengersAvailable [2].middle = "1D6"
+	gPassengersAvailable [2].high = "1D6-1D6";
+
+	gPassengersAvailable [3].low = "2D6";
+	gPassengersAvailable [3].middle = "2D6-1D6"
+	gPassengersAvailable [3].high = "2D6-2D6";
+	
+	gPassengersAvailable [4].low = "3D6-1D6";
+	gPassengersAvailable [4].middle = "2D6-1D6"
+	gPassengersAvailable [4].high = "2D6-1D6";
+	
+	gPassengersAvailable [5].low = "3D6-1D6";
+	gPassengersAvailable [5].middle = "3D6-2D6"
+	gPassengersAvailable [5].high = "2D6-1D6";
+	
+	gPassengersAvailable [6].low = "3D6";
+	gPassengersAvailable [6].middle = "3D6-2D6"
+	gPassengersAvailable [6].high = "3D6-2D6";
+	
+	gPassengersAvailable [7].low = "3D6";
+	gPassengersAvailable [7].middle = "3D6-1D6"
+	gPassengersAvailable [7].high = "3D6-2D6";
+	
+	gPassengersAvailable [8].low = "4D6";
+	gPassengersAvailable [8].middle = "3D6-1D6"
+	gPassengersAvailable [8].high = "3D6-1D6";
+	
+	gPassengersAvailable [9].low = "4D6";
+	gPassengersAvailable [9].middle = "3D6"
+	gPassengersAvailable [9].high = "3D6-1D6";
+	
+	gPassengersAvailable [10].low = "5D6";
+	gPassengersAvailable [10].middle = "3D6"
+	gPassengersAvailable [10].high = "3D6-1D6";
+	
+	gPassengersAvailable [11].low = "5D6";
+	gPassengersAvailable [11].middle = "4D6"
+	gPassengersAvailable [11].high = "3D6";
+	
+	gPassengersAvailable [12].low = "6D6";
+	gPassengersAvailable [12].middle = "4D6"
+	gPassengersAvailable [12].high = "3D6";
+	
+	gPassengersAvailable [13].low = "6D6";
+	gPassengersAvailable [13].middle = "4D6"
+	gPassengersAvailable [13].high = "4D6";
+	
+	gPassengersAvailable [14].low = "7D6";
+	gPassengersAvailable [14].middle = "5D6"
+	gPassengersAvailable [14].high = "4D6";
+	
+	gPassengersAvailable [15].low = "8D6";
+	gPassengersAvailable [15].middle = "5D6"
+	gPassengersAvailable [15].high = "4D6";
+	
+	gPassengersAvailable [16].low = "9D6";
+	gPassengersAvailable [16].middle = "6D6"
+	gPassengersAvailable [16].high = "5D6";
+	
+}
+
+function
+setupSpeculativeTradingTables ()
+{
+	gTradeGoods = new Object ();
+	
+	gTradeGoods ["11"] = new Object ();
+	gTradeGoods ["11"].type = "Basic Electronics";
+	gTradeGoods ["11"].examples = "Simple electronics including basic computers up to TL 10.";
+	gTradeGoods ["11"].availability = new Array ();
+	gTradeGoods ["11"].tons = "1D6x10";
+	gTradeGoods ["11"].price = 10000;
+	gTradeGoods ["11"].purchaseDMs = new Array ();
+	gTradeGoods ["11"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["11"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["11"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["11"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["11"].purchaseDMs [1].tradeClass = "hitech";
+	gTradeGoods ["11"].purchaseDMs [1].mod = 3;
+	gTradeGoods ["11"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["11"].purchaseDMs [2].tradeClass = "rich";
+	gTradeGoods ["11"].purchaseDMs [2].mod = 1;
+	gTradeGoods ["11"].saleDMs = new Array ();
+	gTradeGoods ["11"].saleDMs [0] = new Object ();
+	gTradeGoods ["11"].saleDMs [0].tradeClass = "nonindustrial";
+	gTradeGoods ["11"].saleDMs [0].mod = 2;
+	gTradeGoods ["11"].saleDMs [1] = new Object ();
+	gTradeGoods ["11"].saleDMs [1].tradeClass = "lowtech";
+	gTradeGoods ["11"].saleDMs [1].mod = 1;
+	gTradeGoods ["11"].saleDMs [2] = new Object ();
+	gTradeGoods ["11"].saleDMs [2].tradeClass = "poor";
+	gTradeGoods ["11"].saleDMs [2].mod = 1;
+	
+	gTradeGoods ["12"] = new Object ();
+	gTradeGoods ["12"].type = "Basic Machine Parts";
+	gTradeGoods ["12"].examples = "Machine components and spare parts for common machinery.";
+	gTradeGoods ["12"].availability = new Array ();
+	gTradeGoods ["12"].tons = "1D6x10";
+	gTradeGoods ["12"].price = 10000;
+	gTradeGoods ["12"].purchaseDMs = new Array ();
+	gTradeGoods ["12"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["12"].purchaseDMs [0].tradeClass = "nonagricultual";
+	gTradeGoods ["12"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["12"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["12"].purchaseDMs [1].tradeClass = "industrial";
+	gTradeGoods ["12"].purchaseDMs [1].mod = 5;
+	gTradeGoods ["12"].saleDMs = new Array ();
+	gTradeGoods ["12"].saleDMs [0] = new Object ();
+	gTradeGoods ["12"].saleDMs [0].tradeClass = "nonindustrial";
+	gTradeGoods ["12"].saleDMs [0].mod = 3;
+	gTradeGoods ["12"].saleDMs [1] = new Object ();
+	gTradeGoods ["12"].saleDMs [1].tradeClass = "agricultural";
+	gTradeGoods ["12"].saleDMs [1].mod = 2;
+	
+	gTradeGoods ["13"] = new Object ();
+	gTradeGoods ["13"].type = "Basic Manufactured Goods";
+	gTradeGoods ["13"].examples = "Household appliances, clothing, and so forth.";
+	gTradeGoods ["13"].availability = new Array ();
+	gTradeGoods ["13"].tons = "1D6x10";
+	gTradeGoods ["13"].price = 10000;
+	gTradeGoods ["13"].purchaseDMs = new Array ();
+	gTradeGoods ["13"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["13"].purchaseDMs [0].tradeClass = "nonagricultual";
+	gTradeGoods ["13"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["13"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["13"].purchaseDMs [1].tradeClass = "industrial";
+	gTradeGoods ["13"].purchaseDMs [1].mod = 5;
+	gTradeGoods ["13"].saleDMs = new Array ();
+	gTradeGoods ["13"].saleDMs [0] = new Object ();
+	gTradeGoods ["13"].saleDMs [0].tradeClass = "nonindustrial";
+	gTradeGoods ["13"].saleDMs [0].mod = 3;
+	gTradeGoods ["13"].saleDMs [1] = new Object ();
+	gTradeGoods ["13"].saleDMs [1].tradeClass = "hipop";
+	gTradeGoods ["13"].saleDMs [1].mod = 2;
+	
+	gTradeGoods ["14"] = new Object ();
+	gTradeGoods ["14"].type = "Basic Raw Materials";
+	gTradeGoods ["14"].examples = "Metal, plastics, chemicals, and other basic materials.";
+	gTradeGoods ["14"].availability = new Array ();
+	gTradeGoods ["14"].tons = "1D6x10";
+	gTradeGoods ["14"].price = 5000;
+	gTradeGoods ["14"].purchaseDMs = new Array ();
+	gTradeGoods ["14"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["14"].purchaseDMs [0].tradeClass = "agricultual";
+	gTradeGoods ["14"].purchaseDMs [0].mod = 3;
+	gTradeGoods ["14"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["14"].purchaseDMs [1].tradeClass = "garden";
+	gTradeGoods ["14"].purchaseDMs [1].mod = 2;
+	gTradeGoods ["14"].saleDMs = new Array ();
+	gTradeGoods ["14"].saleDMs [0] = new Object ();
+	gTradeGoods ["14"].saleDMs [0].tradeClass = "industrial";
+	gTradeGoods ["14"].saleDMs [0].mod = 2;
+	gTradeGoods ["14"].saleDMs [1] = new Object ();
+	gTradeGoods ["14"].saleDMs [1].tradeClass = "poor";
+	gTradeGoods ["14"].saleDMs [1].mod = 2;
+	
+	gTradeGoods ["15"] = new Object ();
+	gTradeGoods ["15"].type = "Basic Consumables";
+	gTradeGoods ["15"].examples = "Food, drink, and other agricultural products.";
+	gTradeGoods ["15"].availability = new Array ();
+	gTradeGoods ["15"].tons = "1D6x10";
+	gTradeGoods ["15"].price = 2000;
+	gTradeGoods ["15"].purchaseDMs = new Array ();
+	gTradeGoods ["15"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["15"].purchaseDMs [0].tradeClass = "agricultual";
+	gTradeGoods ["15"].purchaseDMs [0].mod = 3;
+	gTradeGoods ["15"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["15"].purchaseDMs [1].tradeClass = "waterworld";
+	gTradeGoods ["15"].purchaseDMs [1].mod = 2;
+	gTradeGoods ["15"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["15"].purchaseDMs [2].tradeClass = "garden";
+	gTradeGoods ["15"].purchaseDMs [2].mod = 1;
+	gTradeGoods ["15"].purchaseDMs [3] = new Object ();
+	gTradeGoods ["15"].purchaseDMs [3].tradeClass = "asteroid";
+	gTradeGoods ["15"].purchaseDMs [3].mod = -4;
+	gTradeGoods ["15"].saleDMs = new Array ();
+	gTradeGoods ["15"].saleDMs [0] = new Object ();
+	gTradeGoods ["15"].saleDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["15"].saleDMs [0].mod = 1;
+	gTradeGoods ["15"].saleDMs [1] = new Object ();
+	gTradeGoods ["15"].saleDMs [1].tradeClass = "fluid";
+	gTradeGoods ["15"].saleDMs [1].mod = 1;
+	gTradeGoods ["15"].saleDMs [2] = new Object ();
+	gTradeGoods ["15"].saleDMs [2].tradeClass = "icecap";
+	gTradeGoods ["15"].saleDMs [2].mod = 1;
+	gTradeGoods ["15"].saleDMs [3] = new Object ();
+	gTradeGoods ["15"].saleDMs [3].tradeClass = "hipop";
+	gTradeGoods ["15"].saleDMs [3].mod = 1;
+	
+	gTradeGoods ["16"] = new Object ();
+	gTradeGoods ["16"].type = "Basic Ore";
+	gTradeGoods ["16"].examples = "Ore bearing common metals.";
+	gTradeGoods ["16"].availability = new Array ();
+	gTradeGoods ["16"].tons = "1D6x10";
+	gTradeGoods ["16"].price = 1000;
+	gTradeGoods ["16"].purchaseDMs = new Array ();
+	gTradeGoods ["16"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["16"].purchaseDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["16"].purchaseDMs [0].mod = 4;
+	gTradeGoods ["16"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["16"].purchaseDMs [1].tradeClass = "icecap";
+	gTradeGoods ["16"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["16"].saleDMs = new Array ();
+	gTradeGoods ["16"].saleDMs [0] = new Object ();
+	gTradeGoods ["16"].saleDMs [0].tradeClass = "industrial";
+	gTradeGoods ["16"].saleDMs [0].mod = 1;
+	gTradeGoods ["16"].saleDMs [1] = new Object ();
+	gTradeGoods ["16"].saleDMs [1].tradeClass = "nonindustrial";
+	gTradeGoods ["16"].saleDMs [1].mod = 1;
+
+	gTradeGoods ["21"] = new Object ();
+	gTradeGoods ["21"].type = "Advanced Electronics";
+	gTradeGoods ["21"].examples = "Advanced sensors, computers, and other electronics up to TL15.";
+	gTradeGoods ["21"].availability = new Array ();
+	gTradeGoods ["21"].availability [0] = "industrial";
+	gTradeGoods ["21"].availability [1] = "hitech";
+	gTradeGoods ["21"].tons = "1D6x5";
+	gTradeGoods ["21"].price = 100000;
+	gTradeGoods ["21"].purchaseDMs = new Array ();
+	gTradeGoods ["21"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["21"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["21"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["21"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["21"].purchaseDMs [1].tradeClass = "hitech";
+	gTradeGoods ["21"].purchaseDMs [1].mod = 3;
+	gTradeGoods ["21"].saleDMs = new Array ();
+	gTradeGoods ["21"].saleDMs [0] = new Object ();
+	gTradeGoods ["21"].saleDMs [0].tradeClass = "nonindustrial";
+	gTradeGoods ["21"].saleDMs [0].mod = 1;
+	gTradeGoods ["21"].saleDMs [1] = new Object ();
+	gTradeGoods ["21"].saleDMs [1].tradeClass = "rich";
+	gTradeGoods ["21"].saleDMs [1].mod = 2;
+	gTradeGoods ["21"].saleDMs [2] = new Object ();
+	gTradeGoods ["21"].saleDMs [2].tradeClass = "asteroid";
+	gTradeGoods ["21"].saleDMs [2].mod = 3;
+
+	gTradeGoods ["22"] = new Object ();
+	gTradeGoods ["22"].type = "Advanced Machine Parts";
+	gTradeGoods ["22"].examples = "Machine components and spare parts, including gravitic components.";
+	gTradeGoods ["22"].availability = new Array ();
+	gTradeGoods ["22"].availability [0] = "industrial";
+	gTradeGoods ["22"].availability [1] = "hitech";
+	gTradeGoods ["22"].tons = "1D6x5";
+	gTradeGoods ["22"].price = 75000;
+	gTradeGoods ["22"].purchaseDMs = new Array ();
+	gTradeGoods ["22"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["22"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["22"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["22"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["22"].purchaseDMs [1].tradeClass = "hitech";
+	gTradeGoods ["22"].purchaseDMs [1].mod = 1;
+	gTradeGoods ["22"].saleDMs = new Array ();
+	gTradeGoods ["22"].saleDMs [0] = new Object ();
+	gTradeGoods ["22"].saleDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["22"].saleDMs [0].mod = 1;
+	gTradeGoods ["22"].saleDMs [1] = new Object ();
+	gTradeGoods ["22"].saleDMs [1].tradeClass = "nonindustrial";
+	gTradeGoods ["22"].saleDMs [1].mod = 2;
+
+	gTradeGoods ["23"] = new Object ();
+	gTradeGoods ["23"].type = "Advanced Manufactured Goods";
+	gTradeGoods ["23"].examples = "Devices and clothing involving advanced technologies.";
+	gTradeGoods ["23"].availability = new Array ();
+	gTradeGoods ["23"].availability [0] = "industrial";
+	gTradeGoods ["23"].availability [1] = "hitech";
+	gTradeGoods ["23"].tons = "1D6x5";
+	gTradeGoods ["23"].price = 75000;
+	gTradeGoods ["23"].purchaseDMs = new Array ();
+	gTradeGoods ["23"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["23"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["23"].purchaseDMs [0].mod = 1;
+	gTradeGoods ["23"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["23"].purchaseDMs [1].tradeClass = "hitech";
+	gTradeGoods ["23"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["23"].saleDMs = new Array ();
+	gTradeGoods ["23"].saleDMs [0] = new Object ();
+	gTradeGoods ["23"].saleDMs [0].tradeClass = "hipop";
+	gTradeGoods ["23"].saleDMs [0].mod = 1;
+	gTradeGoods ["23"].saleDMs [1] = new Object ();
+	gTradeGoods ["23"].saleDMs [1].tradeClass = "rich";
+	gTradeGoods ["23"].saleDMs [1].mod = 2;
+
+	gTradeGoods ["24"] = new Object ();
+	gTradeGoods ["24"].type = "Advanced Weapons";
+	gTradeGoods ["24"].examples = "Firearms, explosives, ammunition, artillery, and other military grade weaponry.";
+	gTradeGoods ["24"].availability = new Array ();
+	gTradeGoods ["24"].availability [0] = "industrial";
+	gTradeGoods ["24"].availability [1] = "hitech";
+	gTradeGoods ["24"].tons = "1D6x5";
+	gTradeGoods ["24"].price = 150000;
+	gTradeGoods ["24"].purchaseDMs = new Array ();
+	gTradeGoods ["24"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["24"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["24"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["24"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["24"].purchaseDMs [1].tradeClass = "hitech";
+	gTradeGoods ["24"].purchaseDMs [1].mod = 2;
+	gTradeGoods ["24"].saleDMs = new Array ();
+	gTradeGoods ["24"].saleDMs [0] = new Object ();
+	gTradeGoods ["24"].saleDMs [0].tradeClass = "poor";
+	gTradeGoods ["24"].saleDMs [0].mod = 1;
+	gTradeGoods ["24"].saleDMs [1] = new Object ();
+	gTradeGoods ["24"].saleDMs [1].tradeClass = "amber";
+	gTradeGoods ["24"].saleDMs [1].mod = 2;
+	gTradeGoods ["24"].saleDMs [2] = new Object ();
+	gTradeGoods ["24"].saleDMs [2].tradeClass = "red";
+	gTradeGoods ["24"].saleDMs [2].mod = 4;
+
+	gTradeGoods ["25"] = new Object ();
+	gTradeGoods ["25"].type = "Advanced Vehicles";
+	gTradeGoods ["25"].examples = "Air/rafts, spacecraft, grav tanks and other vehicles up to TL15.";
+	gTradeGoods ["25"].availability = new Array ();
+	gTradeGoods ["25"].availability [0] = "industrial";
+	gTradeGoods ["25"].availability [1] = "hitech";
+	gTradeGoods ["25"].tons = "1D6x5";
+	gTradeGoods ["25"].price = 180000;
+	gTradeGoods ["25"].purchaseDMs = new Array ();
+	gTradeGoods ["25"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["25"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["25"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["25"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["25"].purchaseDMs [1].tradeClass = "hitech";
+	gTradeGoods ["25"].purchaseDMs [1].mod = 2;
+	gTradeGoods ["25"].saleDMs = new Array ();
+	gTradeGoods ["25"].saleDMs [0] = new Object ();
+	gTradeGoods ["25"].saleDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["25"].saleDMs [0].mod = 2;
+	gTradeGoods ["25"].saleDMs [1] = new Object ();
+	gTradeGoods ["25"].saleDMs [1].tradeClass = "rich";
+	gTradeGoods ["25"].saleDMs [1].mod = 2;
+
+	gTradeGoods ["26"] = new Object ();
+	gTradeGoods ["26"].type = "Biochemicals";
+	gTradeGoods ["26"].examples = "Biofuels, organic chemicals, extracts.";
+	gTradeGoods ["26"].availability = new Array ();
+	gTradeGoods ["26"].availability [0] = "industrial";
+	gTradeGoods ["26"].availability [1] = "hitech";
+	gTradeGoods ["26"].tons = "1D6x5";
+	gTradeGoods ["26"].price = 50000;
+	gTradeGoods ["26"].purchaseDMs = new Array ();
+	gTradeGoods ["26"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["26"].purchaseDMs [0].tradeClass = "agricultural";
+	gTradeGoods ["26"].purchaseDMs [0].mod = 1;
+	gTradeGoods ["26"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["26"].purchaseDMs [1].tradeClass = "waterworld";
+	gTradeGoods ["26"].purchaseDMs [1].mod = 2;
+	gTradeGoods ["26"].saleDMs = new Array ();
+	gTradeGoods ["26"].saleDMs [0] = new Object ();
+	gTradeGoods ["26"].saleDMs [0].tradeClass = "industrial";
+	gTradeGoods ["26"].saleDMs [0].mod = 1;
+
+	gTradeGoods ["31"] = new Object ();
+	gTradeGoods ["31"].type = "Crystals and Gems";
+	gTradeGoods ["31"].examples = "Diamonds, synthetic or natural gemstones.";
+	gTradeGoods ["31"].availability = new Array ();
+	gTradeGoods ["31"].availability [0] = "asteroid";
+	gTradeGoods ["31"].availability [1] = "desert";
+	gTradeGoods ["31"].availability [2] = "icecap";
+	gTradeGoods ["31"].tons = "1D6x5";
+	gTradeGoods ["31"].price = 20000;
+	gTradeGoods ["31"].purchaseDMs = new Array ();
+	gTradeGoods ["31"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["31"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["31"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["31"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["31"].purchaseDMs [1].tradeClass = "hitech";
+	gTradeGoods ["31"].purchaseDMs [1].mod = 2;
+	gTradeGoods ["31"].saleDMs = new Array ();
+	gTradeGoods ["31"].saleDMs [0] = new Object ();
+	gTradeGoods ["31"].saleDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["31"].saleDMs [0].mod = 2;
+	gTradeGoods ["31"].saleDMs [1] = new Object ();
+	gTradeGoods ["31"].saleDMs [1].tradeClass = "rich";
+	gTradeGoods ["31"].saleDMs [1].mod = 2;
+
+	gTradeGoods ["32"] = new Object ();
+	gTradeGoods ["32"].type = "Cybernetics";
+	gTradeGoods ["32"].examples = "Cybernetic components, replacement limbs.";
+	gTradeGoods ["32"].availability = new Array ();
+	gTradeGoods ["32"].availability [0] = "hitech";
+	gTradeGoods ["32"].tons = "1D6";
+	gTradeGoods ["32"].price = 250000;
+	gTradeGoods ["32"].purchaseDMs = new Array ();
+	gTradeGoods ["32"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["32"].purchaseDMs [0].tradeClass = "hitech";
+	gTradeGoods ["32"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["32"].saleDMs = new Array ();
+	gTradeGoods ["32"].saleDMs [0] = new Object ();
+	gTradeGoods ["32"].saleDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["32"].saleDMs [0].mod = 1;
+	gTradeGoods ["32"].saleDMs [1] = new Object ();
+	gTradeGoods ["32"].saleDMs [1].tradeClass = "icecap";
+	gTradeGoods ["32"].saleDMs [1].mod = 1;
+	gTradeGoods ["32"].saleDMs [1] = new Object ();
+	gTradeGoods ["32"].saleDMs [1].tradeClass = "rich";
+	gTradeGoods ["32"].saleDMs [1].mod = 2;
+
+	gTradeGoods ["33"] = new Object ();
+	gTradeGoods ["33"].type = "Live Animals";
+	gTradeGoods ["33"].examples = "Riding animals, beasts of burden, exotic pets.";
+	gTradeGoods ["33"].availability = new Array ();
+	gTradeGoods ["33"].availability [0] = "agricultural";
+	gTradeGoods ["33"].availability [1] = "garden";
+	gTradeGoods ["33"].tons = "1D6x10";
+	gTradeGoods ["33"].price = 10000;
+	gTradeGoods ["33"].purchaseDMs = new Array ();
+	gTradeGoods ["33"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["33"].purchaseDMs [0].tradeClass = "agricultural";
+	gTradeGoods ["33"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["33"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["33"].purchaseDMs [1].tradeClass = "garden";
+	gTradeGoods ["33"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["33"].saleDMs = new Array ();
+	gTradeGoods ["33"].saleDMs [0] = new Object ();
+	gTradeGoods ["33"].saleDMs [0].tradeClass = "lowpop";
+	gTradeGoods ["33"].saleDMs [0].mod = 3;
+
+	gTradeGoods ["34"] = new Object ();
+	gTradeGoods ["34"].type = "Luxury Consumables";
+	gTradeGoods ["34"].examples = "Rare foods, fine liquors.";
+	gTradeGoods ["34"].availability = new Array ();
+	gTradeGoods ["34"].availability [0] = "agricultural";
+	gTradeGoods ["34"].availability [1] = "garden";
+	gTradeGoods ["34"].availability [2] = "waterworld";
+	gTradeGoods ["34"].tons = "1D6x10";
+	gTradeGoods ["34"].price = 20000;
+	gTradeGoods ["34"].purchaseDMs = new Array ();
+	gTradeGoods ["34"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["34"].purchaseDMs [0].tradeClass = "agricultural";
+	gTradeGoods ["34"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["34"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["34"].purchaseDMs [1].tradeClass = "garden";
+	gTradeGoods ["34"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["34"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["34"].purchaseDMs [2].tradeClass = "waterworld";
+	gTradeGoods ["34"].purchaseDMs [2].mod = 1;
+	gTradeGoods ["34"].saleDMs = new Array ();
+	gTradeGoods ["34"].saleDMs [0] = new Object ();
+	gTradeGoods ["34"].saleDMs [0].tradeClass = "rich";
+	gTradeGoods ["34"].saleDMs [0].mod = 2;
+	gTradeGoods ["34"].saleDMs [1] = new Object ();
+	gTradeGoods ["34"].saleDMs [1].tradeClass = "hipop";
+	gTradeGoods ["34"].saleDMs [1].mod = 2;
+
+	gTradeGoods ["35"] = new Object ();
+	gTradeGoods ["35"].type = "Luxury Goods";
+	gTradeGoods ["35"].examples = "Rare foods, fine liquors.";
+	gTradeGoods ["35"].availability = new Array ();
+	gTradeGoods ["35"].availability [0] = "hipop";
+	gTradeGoods ["35"].tons = "1D6";
+	gTradeGoods ["35"].price = 200000;
+	gTradeGoods ["35"].purchaseDMs = new Array ();
+	gTradeGoods ["35"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["35"].purchaseDMs [0].tradeClass = "hipop";
+	gTradeGoods ["35"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["35"].saleDMs = new Array ();
+	gTradeGoods ["35"].saleDMs [0] = new Object ();
+	gTradeGoods ["35"].saleDMs [0].tradeClass = "rich";
+	gTradeGoods ["35"].saleDMs [0].mod = 4;
+
+	gTradeGoods ["36"] = new Object ();
+	gTradeGoods ["36"].type = "Medical Supplies";
+	gTradeGoods ["36"].examples = "Diagnostic equipment, basic drugs, cloning technology.";
+	gTradeGoods ["36"].availability = new Array ();
+	gTradeGoods ["36"].availability [0] = "hitech";
+	gTradeGoods ["36"].availability [1] = "hipop";
+	gTradeGoods ["36"].tons = "1D6x5";
+	gTradeGoods ["36"].price = 50000;
+	gTradeGoods ["36"].purchaseDMs = new Array ();
+	gTradeGoods ["36"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["36"].purchaseDMs [0].tradeClass = "hitech";
+	gTradeGoods ["36"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["36"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["36"].purchaseDMs [1].tradeClass = "hipop";
+	gTradeGoods ["36"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["36"].saleDMs = new Array ();
+	gTradeGoods ["36"].saleDMs [0] = new Object ();
+	gTradeGoods ["36"].saleDMs [0].tradeClass = "industrial";
+	gTradeGoods ["36"].saleDMs [0].mod = 2;
+	gTradeGoods ["36"].saleDMs [1] = new Object ();
+	gTradeGoods ["36"].saleDMs [1].tradeClass = "poor";
+	gTradeGoods ["36"].saleDMs [1].mod = 1;
+	gTradeGoods ["36"].saleDMs [2] = new Object ();
+	gTradeGoods ["36"].saleDMs [2].tradeClass = "rich";
+	gTradeGoods ["36"].saleDMs [2].mod = 1;
+
+	gTradeGoods ["41"] = new Object ();
+	gTradeGoods ["41"].type = "Petrochemicals";
+	gTradeGoods ["41"].examples = "Oil, liquid fuels.";
+	gTradeGoods ["41"].availability = new Array ();
+	gTradeGoods ["41"].availability [0] = "desert";
+	gTradeGoods ["41"].availability [1] = "liquid";
+	gTradeGoods ["41"].availability [2] = "icecap";
+	gTradeGoods ["41"].availability [3] = "waterworld";
+	gTradeGoods ["41"].tons = "1D6x10";
+	gTradeGoods ["41"].price = 10000;
+	gTradeGoods ["41"].purchaseDMs = new Array ();
+	gTradeGoods ["41"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["41"].purchaseDMs [0].tradeClass = "desert";
+	gTradeGoods ["41"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["41"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["41"].purchaseDMs [1].tradeClass = "liquid";
+	gTradeGoods ["41"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["41"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["41"].purchaseDMs [2].tradeClass = "icecap";
+	gTradeGoods ["41"].purchaseDMs [2].mod = 0;
+	gTradeGoods ["41"].purchaseDMs [3] = new Object ();
+	gTradeGoods ["41"].purchaseDMs [3].tradeClass = "waterworld";
+	gTradeGoods ["41"].purchaseDMs [3].mod = 0;
+	gTradeGoods ["41"].saleDMs = new Array ();
+	gTradeGoods ["41"].saleDMs [0] = new Object ();
+	gTradeGoods ["41"].saleDMs [0].tradeClass = "industrial";
+	gTradeGoods ["41"].saleDMs [0].mod = 2;
+	gTradeGoods ["41"].saleDMs [1] = new Object ();
+	gTradeGoods ["41"].saleDMs [1].tradeClass = "agricultural";
+	gTradeGoods ["41"].saleDMs [1].mod = 1;
+	gTradeGoods ["41"].saleDMs [2] = new Object ();
+	gTradeGoods ["41"].saleDMs [2].tradeClass = "lowtech";
+	gTradeGoods ["41"].saleDMs [2].mod = 2;
+
+	gTradeGoods ["42"] = new Object ();
+	gTradeGoods ["42"].type = "Pharmaceuticals";
+	gTradeGoods ["42"].examples = "Drugs, medical supplies, anagathics, fast or slow drugs.";
+	gTradeGoods ["42"].availability = new Array ();
+	gTradeGoods ["42"].availability [0] = "asteroid";
+	gTradeGoods ["42"].availability [1] = "desert";
+	gTradeGoods ["42"].availability [2] = "hipop";
+	gTradeGoods ["42"].availability [3] = "waterworld";
+	gTradeGoods ["42"].tons = "1D6";
+	gTradeGoods ["42"].price = 100000;
+	gTradeGoods ["42"].purchaseDMs = new Array ();
+	gTradeGoods ["42"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["42"].purchaseDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["42"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["42"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["42"].purchaseDMs [1].tradeClass = "desert";
+	gTradeGoods ["42"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["42"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["42"].purchaseDMs [2].tradeClass = "hipop";
+	gTradeGoods ["42"].purchaseDMs [2].mod = 0;
+	gTradeGoods ["42"].purchaseDMs [3] = new Object ();
+	gTradeGoods ["42"].purchaseDMs [3].tradeClass = "waterworld";
+	gTradeGoods ["42"].purchaseDMs [3].mod = 0;
+	gTradeGoods ["42"].saleDMs = new Array ();
+	gTradeGoods ["42"].saleDMs [0] = new Object ();
+	gTradeGoods ["42"].saleDMs [0].tradeClass = "rich";
+	gTradeGoods ["42"].saleDMs [0].mod = 2;
+	gTradeGoods ["42"].saleDMs [1] = new Object ();
+	gTradeGoods ["42"].saleDMs [1].tradeClass = "lowtech";
+	gTradeGoods ["42"].saleDMs [1].mod = 1;
+
+	gTradeGoods ["43"] = new Object ();
+	gTradeGoods ["43"].type = "Polymers";
+	gTradeGoods ["43"].examples = "Plastics and other synthetics.";
+	gTradeGoods ["43"].availability = new Array ();
+	gTradeGoods ["43"].availability [0] = "industrial";
+	gTradeGoods ["43"].tons = "1D6";
+	gTradeGoods ["43"].price = 100000;
+	gTradeGoods ["43"].purchaseDMs = new Array ();
+	gTradeGoods ["43"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["43"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["43"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["43"].saleDMs = new Array ();
+	gTradeGoods ["43"].saleDMs [0] = new Object ();
+	gTradeGoods ["43"].saleDMs [0].tradeClass = "rich";
+	gTradeGoods ["43"].saleDMs [0].mod = 2;
+	gTradeGoods ["43"].saleDMs [1] = new Object ();
+	gTradeGoods ["43"].saleDMs [1].tradeClass = "nonindustrial";
+	gTradeGoods ["43"].saleDMs [1].mod = 1;
+
+	gTradeGoods ["44"] = new Object ();
+	gTradeGoods ["44"].type = "Precious Metals";
+	gTradeGoods ["44"].examples = "Gold, silver, platinum, rare elements.";
+	gTradeGoods ["44"].availability = new Array ();
+	gTradeGoods ["44"].availability [0] = "asteroid";
+	gTradeGoods ["44"].availability [1] = "desert";
+	gTradeGoods ["44"].availability [2] = "icecap";
+	gTradeGoods ["44"].availability [3] = "fluid";
+	gTradeGoods ["44"].tons = "1D6";
+	gTradeGoods ["44"].price = 50000;
+	gTradeGoods ["44"].purchaseDMs = new Array ();
+	gTradeGoods ["44"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["44"].purchaseDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["44"].purchaseDMs [0].mod = 3;
+	gTradeGoods ["44"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["44"].purchaseDMs [1].tradeClass = "desert";
+	gTradeGoods ["44"].purchaseDMs [1].mod = 1;
+	gTradeGoods ["44"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["44"].purchaseDMs [2].tradeClass = "icecap";
+	gTradeGoods ["44"].purchaseDMs [2].mod = 2;
+	gTradeGoods ["44"].purchaseDMs [3] = new Object ();
+	gTradeGoods ["44"].purchaseDMs [3].tradeClass = "fluid";
+	gTradeGoods ["44"].purchaseDMs [3].mod = 0;
+	gTradeGoods ["44"].saleDMs = new Array ();
+	gTradeGoods ["44"].saleDMs [0] = new Object ();
+	gTradeGoods ["44"].saleDMs [0].tradeClass = "rich";
+	gTradeGoods ["44"].saleDMs [0].mod = 3;
+	gTradeGoods ["44"].saleDMs [1] = new Object ();
+	gTradeGoods ["44"].saleDMs [1].tradeClass = "industrial";
+	gTradeGoods ["44"].saleDMs [1].mod = 2;
+	gTradeGoods ["44"].saleDMs [2] = new Object ();
+	gTradeGoods ["44"].saleDMs [2].tradeClass = "hitech";
+	gTradeGoods ["44"].saleDMs [2].mod = 1;
+	
+	gTradeGoods ["45"] = new Object ();
+	gTradeGoods ["45"].type = "Radioactives";
+	gTradeGoods ["45"].examples = "Uranium, plutonium, unobtanium, rare elements.";
+	gTradeGoods ["45"].availability = new Array ();
+	gTradeGoods ["45"].availability [0] = "asteroid";
+	gTradeGoods ["45"].availability [1] = "desert";
+	gTradeGoods ["45"].availability [2] = "lowpop";
+	gTradeGoods ["45"].tons = "1D6";
+	gTradeGoods ["45"].price = 1000000;
+	gTradeGoods ["45"].purchaseDMs = new Array ();
+	gTradeGoods ["45"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["45"].purchaseDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["45"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["45"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["45"].purchaseDMs [1].tradeClass = "desert";
+	gTradeGoods ["45"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["45"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["45"].purchaseDMs [2].tradeClass = "lowpop";
+	gTradeGoods ["45"].purchaseDMs [2].mod = -4;
+	gTradeGoods ["45"].saleDMs = new Array ();
+	gTradeGoods ["45"].saleDMs [0] = new Object ();
+	gTradeGoods ["45"].saleDMs [0].tradeClass = "industrial";
+	gTradeGoods ["45"].saleDMs [0].mod = 3;
+	gTradeGoods ["45"].saleDMs [1] = new Object ();
+	gTradeGoods ["45"].saleDMs [1].tradeClass = "hitech";
+	gTradeGoods ["45"].saleDMs [1].mod = 1;
+	gTradeGoods ["45"].saleDMs [2] = new Object ();
+	gTradeGoods ["45"].saleDMs [2].tradeClass = "nonindustrial";
+	gTradeGoods ["45"].saleDMs [2].mod = -2;
+	gTradeGoods ["45"].saleDMs [3] = new Object ();
+	gTradeGoods ["45"].saleDMs [3].tradeClass = "agricultural";
+	gTradeGoods ["45"].saleDMs [3].mod = -3;
+	
+	gTradeGoods ["46"] = new Object ();
+	gTradeGoods ["46"].type = "Robots";
+	gTradeGoods ["46"].examples = "Industrial and personal robots and drones.";
+	gTradeGoods ["46"].availability = new Array ();
+	gTradeGoods ["46"].availability [0] = "industrial";
+	gTradeGoods ["46"].availability [1] = "hitech";
+	gTradeGoods ["46"].tons = "1D6x5";
+	gTradeGoods ["46"].price = 400000;
+	gTradeGoods ["46"].purchaseDMs = new Array ();
+	gTradeGoods ["46"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["46"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["46"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["46"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["46"].purchaseDMs [1].tradeClass = "hitech";
+	gTradeGoods ["46"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["46"].saleDMs = new Array ();
+	gTradeGoods ["46"].saleDMs [0] = new Object ();
+	gTradeGoods ["46"].saleDMs [0].tradeClass = "agricultural";
+	gTradeGoods ["46"].saleDMs [0].mod = 2;
+	gTradeGoods ["46"].saleDMs [1] = new Object ();
+	gTradeGoods ["46"].saleDMs [1].tradeClass = "hitech";
+	gTradeGoods ["46"].saleDMs [1].mod = 1;
+	
+	gTradeGoods ["51"] = new Object ();
+	gTradeGoods ["51"].type = "Spices";
+	gTradeGoods ["51"].examples = "Preservatives, natural food additives, natural drugs.";
+	gTradeGoods ["51"].availability = new Array ();
+	gTradeGoods ["51"].availability [0] = "garden";
+	gTradeGoods ["51"].availability [1] = "desert";
+	gTradeGoods ["51"].availability [2] = "waterworld";
+	gTradeGoods ["51"].tons = "1D6x5";
+	gTradeGoods ["51"].price = 6000;
+	gTradeGoods ["51"].purchaseDMs = new Array ();
+	gTradeGoods ["51"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["51"].purchaseDMs [0].tradeClass = "garden";
+	gTradeGoods ["51"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["51"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["51"].purchaseDMs [1].tradeClass = "desert";
+	gTradeGoods ["51"].purchaseDMs [1].mod = 2;
+	gTradeGoods ["51"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["51"].purchaseDMs [2].tradeClass = "waterworld";
+	gTradeGoods ["51"].purchaseDMs [2].mod = 0;
+	gTradeGoods ["51"].saleDMs = new Array ();
+	gTradeGoods ["51"].saleDMs [0] = new Object ();
+	gTradeGoods ["51"].saleDMs [0].tradeClass = "hipop";
+	gTradeGoods ["51"].saleDMs [0].mod = 2;
+	gTradeGoods ["51"].saleDMs [1] = new Object ();
+	gTradeGoods ["51"].saleDMs [1].tradeClass = "rich";
+	gTradeGoods ["51"].saleDMs [1].mod = 1;
+	gTradeGoods ["51"].saleDMs [2] = new Object ();
+	gTradeGoods ["51"].saleDMs [2].tradeClass = "poor";
+	gTradeGoods ["51"].saleDMs [2].mod = 1;
+	
+	gTradeGoods ["52"] = new Object ();
+	gTradeGoods ["52"].type = "Textiles";
+	gTradeGoods ["52"].examples = "Clothing and fabrics.";
+	gTradeGoods ["52"].availability = new Array ();
+	gTradeGoods ["52"].availability [0] = "agricultural";
+	gTradeGoods ["52"].availability [1] = "nonindustrial";
+	gTradeGoods ["52"].tons = "1D6x10";
+	gTradeGoods ["52"].price = 3000;
+	gTradeGoods ["52"].purchaseDMs = new Array ();
+	gTradeGoods ["52"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["52"].purchaseDMs [0].tradeClass = "agricultural";
+	gTradeGoods ["52"].purchaseDMs [0].mod = 7;
+	gTradeGoods ["52"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["52"].purchaseDMs [1].tradeClass = "nonindustrial";
+	gTradeGoods ["52"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["52"].saleDMs = new Array ();
+	gTradeGoods ["52"].saleDMs [0] = new Object ();
+	gTradeGoods ["52"].saleDMs [0].tradeClass = "hipop";
+	gTradeGoods ["52"].saleDMs [0].mod = 3;
+	gTradeGoods ["52"].saleDMs [1] = new Object ();
+	gTradeGoods ["52"].saleDMs [1].tradeClass = "nonagricultural";
+	gTradeGoods ["52"].saleDMs [1].mod = 2;
+	
+	gTradeGoods ["53"] = new Object ();
+	gTradeGoods ["53"].type = "Uncommon Ore";
+	gTradeGoods ["53"].examples = "Ore containing precious or valuable elements.";
+	gTradeGoods ["53"].availability = new Array ();
+	gTradeGoods ["53"].availability [0] = "asteroid";
+	gTradeGoods ["53"].availability [1] = "icecap";
+	gTradeGoods ["53"].tons = "1D6x10";
+	gTradeGoods ["53"].price = 5000;
+	gTradeGoods ["53"].purchaseDMs = new Array ();
+	gTradeGoods ["53"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["53"].purchaseDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["53"].purchaseDMs [0].mod = 4;
+	gTradeGoods ["53"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["53"].purchaseDMs [1].tradeClass = "icecap";
+	gTradeGoods ["53"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["53"].saleDMs = new Array ();
+	gTradeGoods ["53"].saleDMs [0] = new Object ();
+	gTradeGoods ["53"].saleDMs [0].tradeClass = "industrial";
+	gTradeGoods ["53"].saleDMs [0].mod = 3;
+	gTradeGoods ["53"].saleDMs [1] = new Object ();
+	gTradeGoods ["53"].saleDMs [1].tradeClass = "nonindustrial";
+	gTradeGoods ["53"].saleDMs [1].mod = 1;
+	
+	gTradeGoods ["54"] = new Object ();
+	gTradeGoods ["54"].type = "Uncommon Raw Materials";
+	gTradeGoods ["54"].examples = "Valuable metals like titanium, rare elements.";
+	gTradeGoods ["54"].availability = new Array ();
+	gTradeGoods ["54"].availability [0] = "agricultural";
+	gTradeGoods ["54"].availability [1] = "desert";
+	gTradeGoods ["54"].availability [2] = "waterworld";
+	gTradeGoods ["54"].tons = "1D6x10";
+	gTradeGoods ["54"].price = 20000;
+	gTradeGoods ["54"].purchaseDMs = new Array ();
+	gTradeGoods ["54"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["54"].purchaseDMs [0].tradeClass = "agricultural";
+	gTradeGoods ["54"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["54"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["54"].purchaseDMs [1].tradeClass = "desert";
+	gTradeGoods ["54"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["54"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["54"].purchaseDMs [2].tradeClass = "waterworld";
+	gTradeGoods ["54"].purchaseDMs [2].mod = 1;
+	gTradeGoods ["54"].saleDMs = new Array ();
+	gTradeGoods ["54"].saleDMs [0] = new Object ();
+	gTradeGoods ["54"].saleDMs [0].tradeClass = "industrial";
+	gTradeGoods ["54"].saleDMs [0].mod = 2;
+	gTradeGoods ["54"].saleDMs [1] = new Object ();
+	gTradeGoods ["54"].saleDMs [1].tradeClass = "hitech";
+	gTradeGoods ["54"].saleDMs [1].mod = 1;
+	
+	gTradeGoods ["55"] = new Object ();
+	gTradeGoods ["55"].type = "Wood";
+	gTradeGoods ["55"].examples = "Hard or beautiful woods and plant extracts.";
+	gTradeGoods ["55"].availability = new Array ();
+	gTradeGoods ["55"].availability [0] = "agricultural";
+	gTradeGoods ["55"].availability [1] = "garden";
+	gTradeGoods ["55"].tons = "1D6x10";
+	gTradeGoods ["55"].price = 1000;
+	gTradeGoods ["55"].purchaseDMs = new Array ();
+	gTradeGoods ["55"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["55"].purchaseDMs [0].tradeClass = "agricultural";
+	gTradeGoods ["55"].purchaseDMs [0].mod = 6;
+	gTradeGoods ["55"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["55"].purchaseDMs [1].tradeClass = "garden";
+	gTradeGoods ["55"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["55"].saleDMs = new Array ();
+	gTradeGoods ["55"].saleDMs [0] = new Object ();
+	gTradeGoods ["55"].saleDMs [0].tradeClass = "rich";
+	gTradeGoods ["55"].saleDMs [0].mod = 2;
+	gTradeGoods ["55"].saleDMs [1] = new Object ();
+	gTradeGoods ["55"].saleDMs [1].tradeClass = "industrial";
+	gTradeGoods ["55"].saleDMs [1].mod = 1;
+	
+	gTradeGoods ["56"] = new Object ();
+	gTradeGoods ["56"].type = "Vehicles";
+	gTradeGoods ["56"].examples = "Wheeled, tracked and other vehicles from TL10 or lower.";
+	gTradeGoods ["56"].availability = new Array ();
+	gTradeGoods ["56"].availability [0] = "industrial";
+	gTradeGoods ["56"].availability [1] = "hitech";
+	gTradeGoods ["56"].tons = "1D6x10";
+	gTradeGoods ["56"].price = 15000;
+	gTradeGoods ["56"].purchaseDMs = new Array ();
+	gTradeGoods ["56"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["56"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["56"].purchaseDMs [0].mod = 2;
+	gTradeGoods ["56"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["56"].purchaseDMs [1].tradeClass = "hitech";
+	gTradeGoods ["56"].purchaseDMs [1].mod = 1;
+	gTradeGoods ["56"].saleDMs = new Array ();
+	gTradeGoods ["56"].saleDMs [0] = new Object ();
+	gTradeGoods ["56"].saleDMs [0].tradeClass = "nonindustrial";
+	gTradeGoods ["56"].saleDMs [0].mod = 2;
+	gTradeGoods ["56"].saleDMs [1] = new Object ();
+	gTradeGoods ["56"].saleDMs [1].tradeClass = "hipop";
+	gTradeGoods ["56"].saleDMs [1].mod = 1;
+	
+	gTradeGoods ["61"] = new Object ();
+	gTradeGoods ["61"].type = "Illegal Biochemicals";
+	gTradeGoods ["61"].examples = "Dangerous chemicals, extracts from endangered species.";
+	gTradeGoods ["61"].availability = new Array ();
+	gTradeGoods ["61"].availability [0] = "agricultural";
+	gTradeGoods ["61"].availability [1] = "waterworld";
+	gTradeGoods ["61"].tons = "1D6x5";
+	gTradeGoods ["61"].price = 50000;
+	gTradeGoods ["61"].purchaseDMs = new Array ();
+	gTradeGoods ["61"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["61"].purchaseDMs [0].tradeClass = "agricultural";
+	gTradeGoods ["61"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["61"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["61"].purchaseDMs [1].tradeClass = "waterworld";
+	gTradeGoods ["61"].purchaseDMs [1].mod = 2;
+	gTradeGoods ["61"].saleDMs = new Array ();
+	gTradeGoods ["61"].saleDMs [0] = new Object ();
+	gTradeGoods ["61"].saleDMs [0].tradeClass = "industrial";
+	gTradeGoods ["61"].saleDMs [0].mod = 6;
+	
+	gTradeGoods ["62"] = new Object ();
+	gTradeGoods ["62"].type = "Illegal Cybernetics";
+	gTradeGoods ["62"].examples = "Combat cybernetics, illegal enhancements.";
+	gTradeGoods ["62"].availability = new Array ();
+	gTradeGoods ["62"].availability [0] = "hitech";
+	gTradeGoods ["62"].tons = "1D6";
+	gTradeGoods ["62"].price = 250000;
+	gTradeGoods ["62"].purchaseDMs = new Array ();
+	gTradeGoods ["62"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["62"].purchaseDMs [0].tradeClass = "hitech";
+	gTradeGoods ["62"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["62"].saleDMs = new Array ();
+	gTradeGoods ["62"].saleDMs [0] = new Object ();
+	gTradeGoods ["62"].saleDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["62"].saleDMs [0].mod = 4;
+	gTradeGoods ["62"].saleDMs [1] = new Object ();
+	gTradeGoods ["62"].saleDMs [1].tradeClass = "icecap";
+	gTradeGoods ["62"].saleDMs [1].mod = 4;
+	gTradeGoods ["62"].saleDMs [2] = new Object ();
+	gTradeGoods ["62"].saleDMs [2].tradeClass = "rich";
+	gTradeGoods ["62"].saleDMs [2].mod = 8;
+	gTradeGoods ["62"].saleDMs [3] = new Object ();
+	gTradeGoods ["62"].saleDMs [3].tradeClass = "amber";
+	gTradeGoods ["62"].saleDMs [3].mod = 6;
+	gTradeGoods ["62"].saleDMs [4] = new Object ();
+	gTradeGoods ["62"].saleDMs [4].tradeClass = "red";
+	gTradeGoods ["62"].saleDMs [4].mod = 6;
+	
+	gTradeGoods ["63"] = new Object ();
+	gTradeGoods ["63"].type = "Illegal Drugs";
+	gTradeGoods ["63"].examples = "Addictive drugs, combat drugs.";
+	gTradeGoods ["63"].availability = new Array ();
+	gTradeGoods ["63"].availability [0] = "asteroid";
+	gTradeGoods ["63"].availability [1] = "desert";
+	gTradeGoods ["63"].availability [2] = "hipop";
+	gTradeGoods ["63"].availability [3] = "waterworld";
+	gTradeGoods ["63"].tons = "1D6";
+	gTradeGoods ["63"].price = 100000;
+	gTradeGoods ["63"].purchaseDMs = new Array ();
+	gTradeGoods ["63"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["63"].purchaseDMs [0].tradeClass = "asteroid";
+	gTradeGoods ["63"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["63"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["63"].purchaseDMs [1].tradeClass = "desert";
+	gTradeGoods ["63"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["63"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["63"].purchaseDMs [2].tradeClass = "hipop";
+	gTradeGoods ["63"].purchaseDMs [2].mod = 0;
+	gTradeGoods ["63"].purchaseDMs [3] = new Object ();
+	gTradeGoods ["63"].purchaseDMs [3].tradeClass = "waterworld";
+	gTradeGoods ["63"].purchaseDMs [3].mod = 0;
+	gTradeGoods ["63"].saleDMs = new Array ();
+	gTradeGoods ["63"].saleDMs [0] = new Object ();
+	gTradeGoods ["63"].saleDMs [0].tradeClass = "rich";
+	gTradeGoods ["63"].saleDMs [0].mod = 6;
+	gTradeGoods ["63"].saleDMs [1] = new Object ();
+	gTradeGoods ["63"].saleDMs [1].tradeClass = "hipop";
+	gTradeGoods ["63"].saleDMs [1].mod = 6;
+	
+	gTradeGoods ["64"] = new Object ();
+	gTradeGoods ["64"].type = "Illegal Luxuries";
+	gTradeGoods ["64"].examples = "Debauched or addictive luxuries.";
+	gTradeGoods ["64"].availability = new Array ();
+	gTradeGoods ["64"].availability [0] = "agricultural";
+	gTradeGoods ["64"].availability [1] = "garden";
+	gTradeGoods ["64"].availability [2] = "waterworld";
+	gTradeGoods ["64"].tons = "1D6";
+	gTradeGoods ["64"].price = 50000;
+	gTradeGoods ["64"].purchaseDMs = new Array ();
+	gTradeGoods ["64"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["64"].purchaseDMs [0].tradeClass = "agricultural";
+	gTradeGoods ["64"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["64"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["64"].purchaseDMs [1].tradeClass = "garden";
+	gTradeGoods ["64"].purchaseDMs [1].mod = 0;
+	gTradeGoods ["64"].purchaseDMs [2] = new Object ();
+	gTradeGoods ["64"].purchaseDMs [2].tradeClass = "waterworld";
+	gTradeGoods ["64"].purchaseDMs [2].mod = 0;
+	gTradeGoods ["64"].saleDMs = new Array ();
+	gTradeGoods ["64"].saleDMs [0] = new Object ();
+	gTradeGoods ["64"].saleDMs [0].tradeClass = "rich";
+	gTradeGoods ["64"].saleDMs [0].mod = 6;
+	gTradeGoods ["64"].saleDMs [1] = new Object ();
+	gTradeGoods ["64"].saleDMs [1].tradeClass = "hipop";
+	gTradeGoods ["64"].saleDMs [1].mod = 4;
+	
+	gTradeGoods ["65"] = new Object ();
+	gTradeGoods ["65"].type = "Illegal Weapons";
+	gTradeGoods ["65"].examples = "Weapons of mass destruction, naval weapons.";
+	gTradeGoods ["65"].availability = new Array ();
+	gTradeGoods ["65"].availability [0] = "industrial";
+	gTradeGoods ["65"].availability [1] = "hitech";
+	gTradeGoods ["65"].tons = "1D6";
+	gTradeGoods ["65"].price = 50000;
+	gTradeGoods ["65"].purchaseDMs = new Array ();
+	gTradeGoods ["65"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["65"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["65"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["65"].purchaseDMs [1] = new Object ();
+	gTradeGoods ["65"].purchaseDMs [1].tradeClass = "hitech";
+	gTradeGoods ["65"].purchaseDMs [1].mod = 2;
+	gTradeGoods ["65"].saleDMs = new Array ();
+	gTradeGoods ["65"].saleDMs [0] = new Object ();
+	gTradeGoods ["65"].saleDMs [0].tradeClass = "poor";
+	gTradeGoods ["65"].saleDMs [0].mod = 6;
+	gTradeGoods ["65"].saleDMs [1] = new Object ();
+	gTradeGoods ["65"].saleDMs [1].tradeClass = "amber";
+	gTradeGoods ["65"].saleDMs [1].mod = 8;
+	gTradeGoods ["65"].saleDMs [2] = new Object ();
+	gTradeGoods ["65"].saleDMs [2].tradeClass = "red";
+	gTradeGoods ["65"].saleDMs [2].mod = 10;
+
+	gTradeGoods ["66"] = new Object ();
+	gTradeGoods ["66"].type = "Exotics";
+	gTradeGoods ["66"].examples = "Er, roleplay this bit.";
+	gTradeGoods ["66"].availability = new Array ();
+	gTradeGoods ["66"].tons = "1D6";
+	gTradeGoods ["66"].price = 0;
+	gTradeGoods ["66"].purchaseDMs = new Array ();
+	gTradeGoods ["66"].purchaseDMs [0] = new Object ();
+	gTradeGoods ["66"].purchaseDMs [0].tradeClass = "industrial";
+	gTradeGoods ["66"].purchaseDMs [0].mod = 0;
+	gTradeGoods ["66"].saleDMs = new Array ();
+	gTradeGoods ["66"].saleDMs [0] = new Object ();
+	gTradeGoods ["66"].saleDMs [0].tradeClass = "poor";
+	gTradeGoods ["66"].saleDMs [0].mod = 6;
+
+	gModifiedPriceTable = new Array ();
+	
+	for (var i = -1; i < 22; i++)
+	{
+		gModifiedPriceTable [i] = new Object ();
+	}
+	
+	gModifiedPriceTable [-1].purchasePrice = 400;
+	gModifiedPriceTable [-1].salePrice = 25;
+	gModifiedPriceTable [0].purchasePrice = 300;
+	gModifiedPriceTable [0].salePrice = 45;
+	gModifiedPriceTable [1].purchasePrice = 200;
+	gModifiedPriceTable [1].salePrice = 50;
+	gModifiedPriceTable [2].purchasePrice = 175;
+	gModifiedPriceTable [2].salePrice = 55;
+	gModifiedPriceTable [3].purchasePrice = 150;
+	gModifiedPriceTable [3].salePrice = 60;
+	gModifiedPriceTable [4].purchasePrice = 135;
+	gModifiedPriceTable [4].salePrice = 65;
+	gModifiedPriceTable [5].purchasePrice = 125;
+	gModifiedPriceTable [5].salePrice = 75;
+	gModifiedPriceTable [6].purchasePrice = 120;
+	gModifiedPriceTable [6].salePrice = 80;
+	gModifiedPriceTable [7].purchasePrice = 115;
+	gModifiedPriceTable [7].salePrice = 85;
+	gModifiedPriceTable [8].purchasePrice = 110;
+	gModifiedPriceTable [8].salePrice = 90;
+	gModifiedPriceTable [9].purchasePrice = 105;
+	gModifiedPriceTable [9].salePrice = 95;
+	gModifiedPriceTable [10].purchasePrice = 100;
+	gModifiedPriceTable [10].salePrice = 100;
+	gModifiedPriceTable [11].purchasePrice = 95;
+	gModifiedPriceTable [11].salePrice = 105;
+	gModifiedPriceTable [12].purchasePrice = 90;
+	gModifiedPriceTable [12].salePrice = 110;
+	gModifiedPriceTable [13].purchasePrice = 85;
+	gModifiedPriceTable [13].salePrice = 115;
+	gModifiedPriceTable [14].purchasePrice = 80;
+	gModifiedPriceTable [14].salePrice = 120;
+	gModifiedPriceTable [15].purchasePrice = 75;
+	gModifiedPriceTable [15].salePrice = 125;
+	gModifiedPriceTable [16].purchasePrice = 70;
+	gModifiedPriceTable [16].salePrice = 135;
+	gModifiedPriceTable [17].purchasePrice = 65;
+	gModifiedPriceTable [17].salePrice = 150;
+	gModifiedPriceTable [18].purchasePrice = 55;
+	gModifiedPriceTable [18].salePrice = 175;
+	gModifiedPriceTable [19].purchasePrice = 50;
+	gModifiedPriceTable [19].salePrice = 200;
+	gModifiedPriceTable [20].purchasePrice = 40;
+	gModifiedPriceTable [20].salePrice = 300;
+	gModifiedPriceTable [21].purchasePrice = 25;
+	gModifiedPriceTable [21].salePrice = 400;
+	
+}
+
+function
+main ()
+{
+	generateWorlds ();
+	setupPassengerTables ();
+	setupFreightTables ();
+	setupSpeculativeTradingTables ();
+}
+
+function
+roll (inDiceSpec)
+{
+	var	diceElements = inDiceSpec.split ("D");
+	
+	var	numDice = parseInt (diceElements [0]);
+	var	diceType = parseInt (diceElements [1]);
+	
+	var	total = 0;
+	
+	for (var i = 0; i < numDice; i++)
+	{
+		total += Math.floor ((Math.random () * diceType) + 1);
+	}
+	
+	return total;
+}
+
+function
+trade (inCurrentUPP, inDestinationUPP)
+{
+	var	current = createWorld (inCurrentUPP);
+	current.trade = createTrade (current);
+
+	var	destination = createWorld (inDestinationUPP);
+	destination.trade = createTrade (destination);
+	
+	// PASSENGERS
+	
+	var	passengerTrafficValue = current.population;
+	passengerTrafficValue += getModifier (current, gPassengerTrafficCurrent);
+	passengerTrafficValue += getModifier (destination, gPassengerTrafficDestination);
+	
+	console.log ("passenger traffic value is " + passengerTrafficValue);
+
+	if (passengerTrafficValue > 16)
+	{
+		passengerTrafficValue = 16;
+	}
+	
+	var	available = gPassengersAvailable [passengerTrafficValue];
+	
+	console.log (available.high + " high");
+	console.log (available.middle + " middle");
+	console.log (available.low + " low");
+	
+	$("#high").html (available.high + " high passengers");
+	$("#middle").html (available.middle + " middle passengers");
+	$("#low").html (available.low + " low passengers");
+	
+	// FREIGHT
+	
+	var	freightValue = destination.population;
+	freightValue += getModifier (current, gFreightTrafficCurrent);
+	freightValue += getModifier (destination, gFreightTrafficDestination);
+	
+	// correct for TL difference
+	var	techDifference = current.tech - destination.tech;
+	
+	if (techDifference > 0)
+	{
+		techDifference = -techDifference;
+	}
+	
+	if (techDifference < -5)
+	{
+		techDifference = -5;
+	}
+
+	console.log ("tech difference is " + techDifference);
+	
+	freightValue += techDifference;
+
+	console.log ("freight value is " + freightValue);
+	
+	if (freightValue > 16)
+	{
+		freightValue = 16;
+	}
+	
+	var	available = gFreightAvailable [freightValue];
+	
+	console.log (available.major + " major");
+	console.log (available.minor + " minor");
+	console.log (available.incidental + " incidental");
+	
+	$("#major").html (available.major + " major cargo lots");
+	$("#minor").html (available.minor + " minor cargo lots");
+	$("#incidental").html (available.incidental + " incidental cargo lots");
+
+	// MAIL
+	
+	// SPECULATIVE TRADE
+	
+	var	tradeGoods = new Object ();
+	
+	for (var dice in gTradeGoods)
+	{
+		var	goods = gTradeGoods [dice];
+		
+		if (goods.availability.length == 0)
+		{
+			// console.log ("adding " + goods.type + " as basic goods");
+
+			tradeGoods [goods.type] = goods;
+		}
+		else
+		{
+			for (var i = 0; i < goods.availability.length; i++)
+			{
+				if (current.trade [goods.availability [i]])
+				{
+					// console.log ("adding " + goods.type + " due to type match on " + goods.availability [i]);
+
+					tradeGoods [goods.type] = goods;
+				}
+			}
+		}
+	}
+	
+	// add some random trade goods
+	
+	var	numRolls = roll ("1D6");
+
+	console.log ("rolled " + numRolls + " random trade goods");
+
+	for (var i = 0; i < numRolls; i++)
+	{
+		var	first = roll ("1D6");
+		var	second = roll ("1D6");
+		
+		var	key = "" + first + second;
+		
+		var	goods = gTradeGoods [key];
+		
+		// console.log ("adding " + goods.type + " due to dice roll");
+
+		tradeGoods [goods.type] = goods;
+	}
+	
+	var	purchasePrices = new Object ();
+	
+	for (var type in tradeGoods)
+	{
+		var	goods = tradeGoods [type];
+		
+		var	purchaseDM = findPurchaseDM (goods, current);
+		
+		// console.log ("adding " + type + " with purchase DM " + purchaseDM);
+		
+		var	priceIndex = roll ("3D6");
+
+		priceIndex += findPurchaseDM (goods, current);
+		priceIndex -= findSaleDM (goods, current);
+		
+		var	price = getPurchasePrice (priceIndex, goods);
+
+		console.log (goods.tons + " of " + goods.type + " at " + price + " (" + goods.price + ")");
+		
+		purchasePrices [type] = price;
+	}
+}
+
+function
+onSubmit ()
+{
+console.log ("onSubmit()");
+
+	var	currentUWP = $("#current-uwp").val ();
+	
+	if (currentUWP == null || currentUWP == undefined || currentUWP.length != 8)
+	{
+		alert ("current UWP is not right, dear");
+		currentUWP = null;
+	}
+	
+	var	destinationUWP = $("#destination-uwp").val ();
+
+	if (destinationUWP == null || destinationUWP == undefined || destinationUWP.length != 8)
+	{
+		alert ("destination UWP is not right, dear");
+		destinationUWP = null;
+	}
+	
+	if (currentUWP && destinationUWP)
+	{
+		try
+		{
+			trade (currentUWP, destinationUWP);
+		}
+		catch (inError)
+		{
+			console.error (inError);
+		}
+	}
+	
+	return false;
+}
+
+document.addEventListener ("DOMContentLoaded", main);
+
+</script>
+
+<!-- view JS gets inserted above -->
+
+</head>
+
+<body>
+
+<!--
+<form onsubmit="return onSubmit();">
+<div>enter current world uwp</div>
+<input id="current-uwp" type="text" value="A788899C">
+<div>enter destination world uwp</div>
+<input id="destination-uwp" type="text" value="C450767A">
+<input type="submit">
+</form>
+-->
+
+<button type="button" onclick="generateWorlds();">Dump Worlds</button>
+
+<div id="high"></div>
+<div id="middle"></div>
+<div id="low"></div>
+
+<div id="major"></div>
+<div id="minor"></div>
+<div id="incidental"></div>
+
+</body>
+
+</html>
+

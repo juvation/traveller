@@ -1,0 +1,540 @@
+.map
+{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 541px;
+	height: 779px;
+	border: 0px;
+	padding: 0px;
+	background-image: url('assets/images/regina.jpg');
+}
+
+.hex
+{
+	position: absolute;
+	width: 67px;
+	height: 78px;
+	/* border: 1px solid red; */
+}
+
+.system
+{
+	position: absolute;
+	left: 50px;
+	top: 50px;
+	width: 400px;
+	height: 200px;
+	border-radius: 10px;
+	border: 4px solid red;
+	background-color: black;
+	color: white;
+	z-index: 100;
+	font-family: 'Microgramma', Helvetica;
+	font-size: 12px;
+}
+
+.system .title
+{
+	text-transform: uppercase;
+	text-align: center;
+	font-size: 18px;
+}
+
+/* COLUMN 0100 */
+
+.hex-0101
+{
+	left: 0px;
+	top: 0px;
+}
+
+.hex-0102
+{
+	left: 0px;
+	top: 78px;
+}
+
+.hex-0103
+{
+	left: 0px;
+	top: 156px;
+}
+
+.hex-0104
+{
+	left: 0px;
+	top: 234px;
+}
+
+.hex-0105
+{
+	left: 0px;
+	top: 312px;
+}
+
+.hex-0106
+{
+	left: 0px;
+	top: 390px;
+}
+
+.hex-0107
+{
+	left: 0px;
+	top: 466px;
+}
+
+.hex-0108
+{
+	left: 0px;
+	top: 544px;
+}
+
+.hex-0109
+{
+	left: 0px;
+	top: 622px;
+}
+
+.hex-0110
+{
+	left: 0px;
+	top: 700px;
+}
+
+/* COLUMN 0200 */
+
+.hex-0201
+{
+	left: 67px;
+	top: 39px;
+}
+
+.hex-0202
+{
+	left: 67px;
+	top: 117px;
+}
+
+.hex-0203
+{
+	left: 67px;
+	top: 195px;
+}
+
+.hex-0204
+{
+	left: 67px;
+	top: 273px;
+}
+
+.hex-0205
+{
+	left: 67px;
+	top: 351px;
+}
+
+.hex-0206
+{
+	left: 67px;
+	top: 429px;
+}
+
+.hex-0207
+{
+	left: 67px;
+	top: 505px;
+}
+
+.hex-0208
+{
+	left: 67px;
+	top: 583px;
+}
+
+.hex-0209
+{
+	left: 67px;
+	top: 661px;
+}
+
+.hex-0210
+{
+	left: 67px;
+	top: 739px;
+}
+
+/* COLUMN 0300 */
+
+.hex-0301
+{
+	left: 134px;
+	top: 0px;
+}
+
+.hex-0302
+{
+	left: 134px;
+	top: 78px;
+}
+
+.hex-0303
+{
+	left: 134px;
+	top: 156px;
+}
+
+.hex-0304
+{
+	left: 134px;
+	top: 234px;
+}
+
+.hex-0305
+{
+	left: 134px;
+	top: 312px;
+}
+
+.hex-0306
+{
+	left: 134px;
+	top: 390px;
+}
+
+.hex-0307
+{
+	left: 134px;
+	top: 466px;
+}
+
+.hex-0308
+{
+	left: 134px;
+	top: 544px;
+}
+
+.hex-0309
+{
+	left: 134px;
+	top: 622px;
+}
+
+.hex-0310
+{
+	left: 134px;
+	top: 700px;
+}
+
+/* COLUMN 0400 */
+
+.hex-0401
+{
+	left: 201px;
+	top: 39px;
+}
+
+.hex-0402
+{
+	left: 201px;
+	top: 117px;
+}
+
+.hex-0403
+{
+	left: 201px;
+	top: 195px;
+}
+
+.hex-0404
+{
+	left: 201px;
+	top: 273px;
+}
+
+.hex-0405
+{
+	left: 201px;
+	top: 351px;
+}
+
+.hex-0406
+{
+	left: 201px;
+	top: 429px;
+}
+
+.hex-0407
+{
+	left: 201px;
+	top: 505px;
+}
+
+.hex-0408
+{
+	left: 201px;
+	top: 583px;
+}
+
+.hex-0409
+{
+	left: 201px;
+	top: 661px;
+}
+
+.hex-0410
+{
+	left: 201px;
+	top: 739px;
+}
+
+/* ROW 0500 */
+
+.hex-0501
+{
+	left: 268px;
+	top: 0px;
+}
+
+.hex-0502
+{
+	left: 268px;
+	top: 78px;
+}
+
+.hex-0503
+{
+	left: 268px;
+	top: 156px;
+}
+
+.hex-0504
+{
+	left: 268px;
+	top: 234px;
+}
+
+.hex-0505
+{
+	left: 268px;
+	top: 312px;
+}
+
+.hex-0506
+{
+	left: 268px;
+	top: 390px;
+}
+
+.hex-0507
+{
+	left: 268px;
+	top: 466px;
+}
+
+.hex-0508
+{
+	left: 268px;
+	top: 544px;
+}
+
+.hex-0509
+{
+	left: 268px;
+	top: 622px;
+}
+
+.hex-0510
+{
+	left: 268px;
+	top: 700px;
+}
+
+/* ROW 0600 */
+
+.hex-0601
+{
+	left: 335px;
+	top: 39px;
+}
+
+.hex-0602
+{
+	left: 335px;
+	top: 117px;
+}
+
+.hex-0603
+{
+	left: 335px;
+	top: 195px;
+}
+
+.hex-0604
+{
+	left: 335px;
+	top: 273px;
+}
+
+.hex-0605
+{
+	left: 335px;
+	top: 351px;
+}
+
+.hex-0606
+{
+	left: 335px;
+	top: 429px;
+}
+
+.hex-0607
+{
+	left: 335px;
+	top: 505px;
+}
+
+.hex-0608
+{
+	left: 335px;
+	top: 583px;
+}
+
+.hex-0609
+{
+	left: 335px;
+	top: 661px;
+}
+
+.hex-0610
+{
+	left: 335px;
+	top: 739px;
+}
+
+/* ROW 0700 */
+
+.hex-0701
+{
+	left: 402px;
+	top: 0px;
+}
+
+.hex-0702
+{
+	left: 402px;
+	top: 78px;
+}
+
+.hex-0703
+{
+	left: 402px;
+	top: 156px;
+}
+
+.hex-0704
+{
+	left: 402px;
+	top: 234px;
+}
+
+.hex-0705
+{
+	left: 402px;
+	top: 312px;
+}
+
+.hex-0706
+{
+	left: 402px;
+	top: 390px;
+}
+
+.hex-0707
+{
+	left: 402px;
+	top: 466px;
+}
+
+.hex-0708
+{
+	left: 402px;
+	top: 544px;
+}
+
+.hex-0709
+{
+	left: 402px;
+	top: 622px;
+}
+
+.hex-0710
+{
+	left: 402px;
+	top: 700px;
+}
+
+/* ROW 0800 */
+
+.hex-0801
+{
+	left: 469px;
+	top: 39px;
+}
+
+.hex-0802
+{
+	left: 469px;
+	top: 117px;
+}
+
+.hex-0803
+{
+	left: 469px;
+	top: 195px;
+}
+
+.hex-0804
+{
+	left: 469px;
+	top: 273px;
+}
+
+.hex-0805
+{
+	left: 469px;
+	top: 351px;
+}
+
+.hex-0806
+{
+	left: 469px;
+	top: 429px;
+}
+
+.hex-0807
+{
+	left: 469px;
+	top: 505px;
+}
+
+.hex-0808
+{
+	left: 469px;
+	top: 583px;
+}
+
+.hex-0809
+{
+	left: 469px;
+	top: 661px;
+}
+
+.hex-0810
+{
+	left: 469px;
+	top: 739px;
+}
+
+

@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<title>Neutrino Application</title>
+
+<!-- CSS -->
+
+<link rel="stylesheet" type="text/css" media="all" nu-href="neutrino/css/neutrino.css">	   
+<link id="application-css" rel="stylesheet" type="text/css" media="all" nu-href="base.css">	   
+<link rel="stylesheet" type="text/css" media="all" nu-href="microgramma.css">	   
+
+<!-- JAVASCRIPT -->
+
+<script src="js/lib/jquery.js" type="text/javascript"></script>
+
+<script src="neutrino/js/neutrino.js" type="text/javascript"></script>
+<script id="application-js" src="js/application.js" type="text/javascript"></script>
+
+<script src="js/systems.js" type="text/javascript"></script>
+
+<!-- IMMEDIATE -->
+
+<script language="javascript" type="text/javascript">
+
+var	gApplication = null;
+
+function
+main ()
+{
+  gApplication = new Application ();
+  //gApplication.nuDevMode = false; // be sure this is set before production deployment
+  gApplication.start ();
+}
+
+document.addEventListener ("DOMContentLoaded", main, false);
+
+</script>
+
+<!-- view JS gets inserted above -->
+
+</head>
+
+<body
+	nu-app="Neutrino Application: Traveller"
+	xnu-progress-view="circlespinner"
+	>
+	<div id="nu-page-container"></div>
+	
+	<!-- loader view, if you want it -->
+	<div nu-view="circlespinner:hc" id="spinner-block" class="circle-spinner nu-invisible"></div>
+	
+	<div nu-view="subsector" nu-dynamic="true"></div>
+</body>
+
+</html>

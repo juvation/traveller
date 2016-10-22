@@ -1,0 +1,36 @@
+<div class="map"></div>
+
+<div nu-view="hexes" nu-dynamic="true">
+	<div class="hexes">
+		<nu:numbers offset="1" limit="9" step="1" prefix="rows">
+			<nu:list key="rows" prefix="row">
+				<nu:numberformat value="$row;" type="frontpad" digits="2" prefix="row">
+					<nu:numbers offset="1" limit="11" step="1" prefix="columns">
+						<nu:list key="columns" prefix="column">
+							<nu:numberformat value="$column;" type="frontpad" digits="2" prefix="column">
+								<div
+									nu-action="(click) call: clickHex"
+									class="hex hex-$row.value;$column.value;" nu-action-params="hex: $row.value;$column.value;;"
+									></div>
+							</nu:numberformat>
+						</nu:list>
+					</nu:numbers>
+				</nu:numberformat>
+			</nu:list>
+		</nu:numbers>
+	</div>
+</div>
+
+<div nu-view="system" nu-action="(click) hideview: system" nu-dynamic="true" class="system nu-invisible">
+	<div class="title">$params.name; / $params.subsector; ($params.location;)</div>
+	<div>UWP: $params.uwp;</div>
+	<nu:if lhs="$params.gasgiant;" rhs="true">
+		<div>Gas giant</div>
+	</nu:if>
+	<nu:if lhs="$params.scoutbase;" rhs="true">
+		<div>Scout base</div>
+	</nu:if>
+	<nu:if lhs="$params.navalbase;" rhs="true">
+		<div>Naval base</div>
+	</nu:if>
+</div>
